@@ -28,15 +28,11 @@
                 <span>CORE:<span class="text-white font-bold">CLAVIS_ERP_v14</span></span>
             </div>
             <div class="flex flex-wrap items-center gap-6">
-                <label class="flex items-center gap-2 cursor-pointer select-none group">
-                    <input type="checkbox" id="erp-module-active" data-action="sync-erp-switch" class="rounded border-slate-700 text-blue-600 bg-slate-800 focus:ring-0 focus:ring-offset-0 h-4 w-4 transition cursor-pointer">
-                    <span class="text-slate-300 group-hover:text-white transition">Shop-Modul Aktivieren</span>
-                </label>
                 <div id="erp-mode-selector-zone" class="flex items-center gap-2.5">
-                    <span class="text-slate-400">Mandanten-Kontext:</span>
+                    <span class="text-slate-400">Mandanten-Kontext (Simuliert):</span>
                     <select id="erp-business-context" data-action="sync-erp-context" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-bold text-blue-400 focus:outline-none focus:border-blue-500 transition cursor-pointer">
-                        <option value="B2C">B2C (Endkunde / Brutto)</option>
-                        <option value="B2B">B2B (Geschäftskunde / Netto)</option>
+                        <option value="Privatkunde">Privatkunde (Endkunde / Brutto)</option>
+                        <option value="Geschäftskunde">Geschäftskunde (B2B / Netto)</option>
                     </select>
                 </div>
             </div>
@@ -44,7 +40,7 @@
     </div>
 
     <div id="erp-disabled-screen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 hidden-element">
-        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md text-center border border-slate-100 max-w-sm">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-sm text-center border border-slate-100">
             <div class="text-rose-500 w-12 h-12 mx-auto mb-4 bg-rose-50 rounded-full flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -78,7 +74,7 @@
                 </div>
                 <div class="flex flex-col">
                     <span class="text-lg font-black tracking-tight text-slate-900 leading-none">CLAVIS</span>
-                    <span id="erp-badge" class="text-[10px] font-bold uppercase tracking-widest text-blue-600 mt-1">B2C Store</span>
+                    <span id="erp-badge" class="text-[10px] font-bold uppercase tracking-widest text-blue-600 mt-1">Privatkunde Store</span>
                 </div>
             </div>
 
@@ -230,8 +226,8 @@
 
     <script>
         let ClavisErpModuleConfig = {
-            isActive: true,
-            contextMode: "B2C"
+            isActive: true, // Erzwinge Aktivität beim Fallback
+            contextMode: "Privatkunde" // Standard-Fallbacksicherung
         };
 
         const products = [
@@ -247,8 +243,20 @@
             cart = JSON.parse(localStorage.getItem('clavis_shop_cart')) || [];
             orders = JSON.parse(localStorage.getItem('clavis_shop_orders')) || [];
             if(localStorage.getItem('clavis_erp_config')) {
-                ClavisErpModuleConfig = JSON.parse(localStorage.getItem('clavis_erp_config'));
+                const storedConfig = JSON.parse(localStorage.getItem('clavis_erp_config'));
+                
+                // Korrektur & Migration veralteter Kontextwerte
+                if (storedConfig.contextMode === "B2C") storedConfig.contextMode = "Privatkunde";
+                if (storedConfig.contextMode === "B2B") storedConfig.contextMode = "Geschäftskunde";
+                
+                ClavisErpModuleConfig = storedConfig;
             }
+            
+            // SELF-HEALING LOGIK: Falls isActive im Speicher fälschlicherweise auf false stand, überschreiben wir es hier,
+            // damit die App nach dem Entfernen des UI-Schalters sofort wieder benutzbar ist.
+            ClavisErpModuleConfig.isActive = true;
+            localStorage.setItem('clavis_erp_config', JSON.stringify(ClavisErpModuleConfig));
+            
         } catch (e) { console.warn("Storage blockiert.", e); }
 
         // DELEGATED EVENT LISTENER
@@ -264,7 +272,6 @@
 
             if (action === "switch-tab") {
                 switchTab(target.getAttribute("data-tab"));
-                // Aktiven Nav-Button optisch hervorheben
                 document.querySelectorAll('[data-action="switch-tab"]').forEach(btn => {
                     btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
                     btn.classList.add('text-slate-600');
@@ -294,10 +301,6 @@
         });
 
         document.addEventListener("change", (event) => {
-            if (event.target.matches("[data-action='sync-erp-switch']")) {
-                ClavisErpModuleConfig.isActive = event.target.checked;
-                applyErpModuleSettings();
-            }
             if (event.target.matches("[data-action='sync-erp-context']")) {
                 ClavisErpModuleConfig.contextMode = event.target.value;
                 applyErpModuleSettings();
@@ -305,10 +308,8 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            document.getElementById('erp-module-active').checked = ClavisErpModuleConfig.isActive;
             document.getElementById('erp-business-context').value = ClavisErpModuleConfig.contextMode;
             
-            // Initialen Tab-Zustand für Navigation setzen
             const firstTab = document.querySelector('[data-action="switch-tab"][data-tab="shop"]');
             if(firstTab) firstTab.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
 
@@ -327,18 +328,18 @@
                 disabledScreen.classList.add('hidden-element');
             }
 
-            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
+            const isGeschaeftskunde = ClavisErpModuleConfig.contextMode === "Geschäftskunde";
             
-            document.getElementById('erp-badge').textContent = isB2B ? "B2B Ecosystem" : "B2C Store";
-            document.getElementById('shop-main-title').textContent = isB2B ? "B2B Katalog (Netto)" : "Unsere Produkte";
-            document.getElementById('shop-tax-notice').textContent = isB2B ? "Preise zzgl. gesetzlicher MwSt. und Versandkosten." : "Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.";
+            document.getElementById('erp-badge').textContent = isGeschaeftskunde ? "Geschäftskunde Ecosystem" : "Privatkunde Store";
+            document.getElementById('shop-main-title').textContent = isGeschaeftskunde ? "Geschäftskunden-Katalog (Netto)" : "Unsere Produkte";
+            document.getElementById('shop-tax-notice').textContent = isGeschaeftskunde ? "Preise zzgl. gesetzlicher MwSt. und Versandkosten." : "Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.";
 
             const companyField = document.getElementById('b2b-field-company');
             const vatidField = document.getElementById('b2b-field-vatid');
             const companyInput = document.getElementById('billing-company');
             const vatidInput = document.getElementById('billing-vatid');
 
-            if (isB2B) {
+            if (isGeschaeftskunde) {
                 companyField.classList.remove('hidden-element');
                 vatidField.classList.remove('hidden-element');
                 companyInput.required = true;
@@ -379,11 +380,11 @@
             const grid = document.getElementById('product-grid');
             if (!grid) return;
             
-            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
+            const isGeschaeftskunde = ClavisErpModuleConfig.contextMode === "Geschäftskunde";
 
             grid.innerHTML = products.map(p => {
-                const displayPrice = isB2B ? p.priceNetto : (p.priceNetto * 1.19);
-                const suffix = isB2B ? " € net." : " €";
+                const displayPrice = isGeschaeftskunde ? p.priceNetto : (p.priceNetto * 1.19);
+                const suffix = isGeschaeftskunde ? " € net." : " €";
 
                 return `
                     <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col justify-between p-6 hover:shadow-md hover:border-slate-300 transition duration-200 transform hover:-translate-y-0.5">
@@ -430,7 +431,7 @@
             const addressBox = document.getElementById('checkout-address-box');
             
             const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
-            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
+            const isGeschaeftskunde = ClavisErpModuleConfig.contextMode === "Geschäftskunde";
             
             if (totalItems > 0) {
                 if(countBadge) { countBadge.textContent = totalItems; countBadge.classList.remove('hidden-element'); }
@@ -453,7 +454,7 @@
                     if (!product) return '';
                     
                     calculatedNettoSum += (product.priceNetto * item.qty);
-                    const singleDisplayPrice = isB2B ? product.priceNetto : (product.priceNetto * 1.19);
+                    const singleDisplayPrice = isGeschaeftskunde ? product.priceNetto : (product.priceNetto * 1.19);
                     const itemDisplayTotal = singleDisplayPrice * item.qty;
 
                     return `
@@ -548,7 +549,7 @@
 
             try { localStorage.setItem('clavis_shop_orders', JSON.stringify(orders)); } catch(e){}
 
-            alert(`Vielen Dank! Ihre [${orderPayload.erpContext}] ERP-Bestellung wurde übermittelt. Nummer: ${orderPayload.orderId}`);
+            alert(`Vielen Dank! Ihre Bestellung als [${orderPayload.erpContext}] wurde übermittelt. Nummer: ${orderPayload.orderId}`);
             cart = []; saveCart(); updateCartUI(); switchTab('orders');
         }
 
@@ -563,7 +564,7 @@
                 <div class="bg-white p-5 border border-slate-200/60 rounded-2xl shadow-sm flex justify-between items-center transition hover:border-slate-300">
                     <div class="flex items-center gap-3">
                         <span class="font-bold text-slate-900 font-mono tracking-tight">${o.orderId}</span>
-                        <span class="text-[9px] uppercase px-2 py-0.5 rounded-md font-bold tracking-wider ${o.context === 'B2B' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}">${o.context}</span>
+                        <span class="text-[9px] uppercase px-2 py-0.5 rounded-md font-bold tracking-wider ${o.context === 'Geschäftskunde' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}">${o.context}</span>
                         <span class="text-xs text-slate-400 font-medium">vom ${o.date}</span>
                     </div>
                     <div class="font-black text-slate-900 font-mono">${o.total.toFixed(2).replace('.', ',')} €</div>
@@ -588,7 +589,7 @@
         const legalTexts = {
             impressum: `<h4 class="font-bold text-slate-900">Anbieter:</h4><p>René Prause<br>CLAVIS Software<br>47441 Moers</p>`,
             privacy: `<h4 class="font-bold text-slate-900">Datenschutz:</h4><p>PWA-Betrieb verarbeitet Daten rein lokal im Sandbox-Verzeichnis des mobilen Endgeräts.</p>`,
-            agb: `<h4 class="font-bold text-slate-900">AGB:</h4><p>Es gelten die gesetzlichen Bestimmungen für Onlinegeschäfte im B2B/B2C-Ecosystem.</p>`,
+            agb: `<h4 class="font-bold text-slate-900">AGB:</h4><p>Es gelten die gesetzlichen Bestimmungen für Onlinegeschäfte im Ecosystem.</p>`,
             withdrawal: `<h4 class="font-bold text-slate-900">Widerrufsbelehrung:</h4><p>Verbraucher haben ein 14-tägiges Widerrufsrecht.</p>`
         };
 

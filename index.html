@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CLAVIS Store - Rechtssicherer E-Shop</title>
+    <title>CLAVIS Store - Multi-Context ERP Shop</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563eb">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -16,11 +16,45 @@
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col">
 
-    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-50 shadow-2xl transition-all duration-300">
+    <div class="bg-slate-900 text-white border-b-4 border-blue-600 p-3 text-xs">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2 font-mono">
+                <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <strong>CLAVIS ERP v14 Integration Matrix</strong>
+            </div>
+            <div class="flex flex-wrap items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" id="erp-module-active" data-action="sync-erp-switch" class="rounded border-gray-600 text-blue-500 bg-slate-800 focus:ring-0" checked>
+                    <span>Shop-Modul im ERP aktiv</span>
+                </label>
+                <div id="erp-mode-selector-zone" class="flex items-center gap-2">
+                    <span>Modus:</span>
+                    <select id="erp-business-context" data-action="sync-erp-context" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-white font-bold focus:outline-none">
+                        <option value="B2C">B2C (Endkunde / Brutto)</option>
+                        <option value="B2B">B2B (Geschäftskunde / Netto)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="erp-disabled-screen" class="fixed inset-0 bg-gray-100 z-50 flex flex-col items-center justify-center p-6 hidden-element">
+        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border border-gray-200">
+            <div class="text-red-500 w-16 h-16 mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-black text-gray-900">Schnittstelle deaktiviert</h2>
+            <p class="text-sm text-gray-500 mt-2">Das E-Commerce-Erweiterungsmodul wurde in den CLAVIS-ERP-Mandanteneinstellungen vorübergehend deaktiviert. Es werden keine Bestellungen entgegengenommen.</p>
+        </div>
+    </div>
+
+    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-40 shadow-2xl transition-all duration-300">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="text-sm">
                 <p class="font-semibold mb-1">Cookie- & Datenschutzeinstellungen</p>
-                <p class="text-gray-400">Wir nutzen Cookies, um Ihnen ein optimales Einkaufserlebnis zu bieten. Essenzielle Cookies sind für den Betrieb des Shops rechtlich notwendig. Weitere Informationen finden Sie in unserer <a href="#" data-action="open-modal" data-modal="privacy" class="underline hover:text-blue-400">Datenschutzerklärung</a>.</p>
+                <p class="text-gray-400">Wir nutzen Cookies für den Betrieb des Marktplatzes. Weitere Informationen in der <a href="#" data-action="open-modal" data-modal="privacy" class="underline hover:text-blue-400">Datenschutzerklärung</a>.</p>
             </div>
             <div class="flex gap-3 shrink-0">
                 <button data-action="cookie-consent" data-consent="essential" class="px-4 py-2 text-xs bg-gray-700 hover:bg-gray-600 rounded font-medium transition">Nur essenzielle</button>
@@ -29,18 +63,17 @@
         </div>
     </div>
 
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            
             <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+                <div class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center shadow-md">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m-2 4a2 2 0 012-2m-2 4a5 5 0 11-5-5h7.938l3 3 1.062-1.062 1.062 1.062L22 13V9a2 2 0 00-2-2h-9.062a5 5 0 00-7.876 3c-.022.148-.034.3-.034.454a5 5 0 005 5h3.586l.707.707a1 1 0 001.414 0l1.414-1.414a1 1 0 000-1.414l-.707-.707V13H15z" />
                     </svg>
                 </div>
                 <div class="flex flex-col">
                     <span class="text-xl font-black tracking-wider text-gray-900 leading-none">CLAVIS</span>
-                    <span class="text-xxs font-bold uppercase tracking-widest text-blue-600 mt-0.5">Ecosystem</span>
+                    <span id="erp-badge" class="text-xxs font-bold uppercase tracking-widest text-blue-600 mt-0.5">B2C Store</span>
                 </div>
             </div>
 
@@ -50,7 +83,7 @@
                     Warenkorb
                     <span id="cart-count" class="absolute -top-1 -right-4 bg-red-500 text-white text-xxs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
                 </button>
-                <button data-action="switch-tab" data-tab="orders" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">Meine Bestellungen</button>
+                <button data-action="switch-tab" data-tab="orders" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">Bestellungen</button>
             </nav>
         </div>
     </header>
@@ -59,8 +92,8 @@
         
         <section id="tab-shop" class="space-y-6">
             <div class="border-b border-gray-200 pb-4">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Unsere Produkte</h1>
-                <p class="text-sm text-gray-500 mt-1">Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.</p>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900" id="shop-main-title">Unsere Produkte</h1>
+                <p class="text-sm text-gray-500 mt-1" id="shop-tax-notice">Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.</p>
             </div>
             <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
@@ -79,10 +112,17 @@
                     <div id="cart-items-container" class="space-y-4"></div>
                     
                     <div id="checkout-address-box" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden-element">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Rechnungsadresse (ERP Master-Data)</h2>
+                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Rechnungsadresse (Stammdaten)</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Firma / Organisation</label><input type="text" id="billing-company" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">USt-IdNr. (B2B)</label><input type="text" id="billing-vatid" placeholder="DE123456789" class="w-full border border-gray-300 rounded-lg p-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                            <div id="b2b-field-company" class="hidden-element">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Firma / Organisation *</label>
+                                <input type="text" id="billing-company" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            <div id="b2b-field-vatid" class="hidden-element">
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">USt-IdNr. *</label>
+                                <input type="text" id="billing-vatid" placeholder="DE123456789" class="w-full border border-gray-300 rounded-lg p-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                            </div>
+                            
                             <div><label class="block text-xs font-semibold text-gray-600 mb-1">Vorname *</label><input type="text" id="billing-firstname" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                             <div><label class="block text-xs font-semibold text-gray-600 mb-1">Nachname *</label><input type="text" id="billing-lastname" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
                             <div class="sm:col-span-2"><label class="block text-xs font-semibold text-gray-600 mb-1">E-Mail-Adresse *</label><input type="email" id="billing-email" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
@@ -184,10 +224,16 @@
     </div>
 
     <script>
+        // Globales ERP-Konfigurations-Modul
+        let ClavisErpModuleConfig = {
+            isActive: true,
+            contextMode: "B2C" // B2C oder B2B
+        };
+
         const products = [
-            { id: "ART-0001", name: "Premium ERP Connect Modul", price: 249.00, desc: "Echtzeit-Synchronisations-Schnittstelle für automatisierte Datenübertragung.", sku: "CLV-PRM-01" },
-            { id: "ART-0002", name: "Automatisierter Webhook-Manager", price: 89.00, desc: "Ereignisgesteuerte Microservices für verzögerungsfreie Bestandsabgleiche.", sku: "CLV-WHM-02" },
-            { id: "ART-0003", name: "Mobiles PWA-Erweiterungspaket", price: 149.00, desc: "Optimiertes Offline-Modul inklusive lokaler Daten-Persistence-Logik.", sku: "CLV-PWA-03" }
+            { id: "ART-0001", name: "Premium ERP Connect Modul", priceNetto: 209.24, desc: "Echtzeit-Synchronisations-Schnittstelle für automatisierte Datenübertragung.", sku: "CLV-PRM-01" },
+            { id: "ART-0002", name: "Automatisierter Webhook-Manager", priceNetto: 74.79, desc: "Ereignisgesteuerte Microservices für verzögerungsfreie Bestandsabgleiche.", sku: "CLV-WHM-02" },
+            { id: "ART-0003", name: "Mobiles PWA-Erweiterungspaket", priceNetto: 125.21, desc: "Optimiertes Offline-Modul inklusive lokaler Daten-Persistence-Logik.", sku: "CLV-PWA-03" }
         ];
 
         let cart = [];
@@ -196,9 +242,10 @@
         try {
             cart = JSON.parse(localStorage.getItem('clavis_shop_cart')) || [];
             orders = JSON.parse(localStorage.getItem('clavis_shop_orders')) || [];
-        } catch (e) {
-            console.warn("Storage blockiert. Fallback auf RAM-Array.", e);
-        }
+            if(localStorage.getItem('clavis_erp_config')) {
+                ClavisErpModuleConfig = JSON.parse(localStorage.getItem('clavis_erp_config'));
+            }
+        } catch (e) { console.warn("Storage blockiert.", e); }
 
         // DELEGATED EVENT LISTENER
         document.addEventListener("click", (event) => {
@@ -217,12 +264,12 @@
             if (action === "cookie-consent") acceptCookies(target.getAttribute("data-consent"));
             if (action === "open-modal") openLegalModal(target.getAttribute("data-modal"));
             if (action === "close-modal") closeLegalModal();
+            if (action === "submit-order") executeOrder();
             
             if (action === "toggle-shipping") {
                 const box = document.getElementById('shipping-address-box');
-                const isChecked = event.target.checked;
                 if(box) {
-                    if (isChecked) {
+                    if (event.target.checked) {
                         box.classList.remove('hidden-element');
                         setShippingRequired(true);
                     } else {
@@ -231,17 +278,73 @@
                     }
                 }
             }
-            if (action === "submit-order") {
-                executeOrder();
+        });
+
+        // INPUT EVENT LISTENER FÜR DIE ERP MATRIX PANEL STEUERUNG
+        document.addEventListener("change", (event) => {
+            if (event.target.matches("[data-action='sync-erp-switch']")) {
+                ClavisErpModuleConfig.isActive = event.target.checked;
+                applyErpModuleSettings();
+            }
+            if (event.target.matches("[data-action='sync-erp-context']")) {
+                ClavisErpModuleConfig.contextMode = event.target.value;
+                applyErpModuleSettings();
             }
         });
 
         document.addEventListener("DOMContentLoaded", () => {
+            // UI Controls mit lokalem Zustand synchronisieren vor dem ersten Render
+            document.getElementById('erp-module-active').checked = ClavisErpModuleConfig.isActive;
+            document.getElementById('erp-business-context').value = ClavisErpModuleConfig.contextMode;
+            
+            applyErpModuleSettings();
+            checkCookieConsent();
+        });
+
+        // DIE ZENTRALE STEUERUNGSFUNKTION FÜR DAS EIN-/AUSSCHALTEN UND DEN MODUS
+        function applyErpModuleSettings() {
+            try { localStorage.setItem('clavis_erp_config', JSON.stringify(ClavisErpModuleConfig)); } catch(e){}
+
+            const disabledScreen = document.getElementById('erp-disabled-screen');
+            if (!ClavisErpModuleConfig.isActive) {
+                disabledScreen.classList.remove('hidden-element');
+                return;
+            } else {
+                disabledScreen.classList.add('hidden-element');
+            }
+
+            // UI an B2B oder B2C Kontext anpassen
+            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
+            
+            document.getElementById('erp-badge').textContent = isB2B ? "B2B Ecosystem" : "B2C Store";
+            document.getElementById('shop-main-title').textContent = isB2B ? "B2B Produktkatalog (Netto)" : "Unsere Produkte";
+            document.getElementById('shop-tax-notice').textContent = isB2B ? "Alle Preise zzgl. gesetzlicher MwSt. und Versandkosten." : "Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.";
+
+            // Felder im Formular ein- oder ausblenden & Validierung umschalten
+            const companyField = document.getElementById('b2b-field-company');
+            const vatidField = document.getElementById('b2b-field-vatid');
+            const companyInput = document.getElementById('billing-company');
+            const vatidInput = document.getElementById('billing-vatid');
+
+            if (isB2B) {
+                companyField.classList.remove('hidden-element');
+                vatidField.classList.remove('hidden-element');
+                companyInput.required = true;
+                vatidInput.required = true;
+            } else {
+                companyField.classList.add('hidden-element');
+                vatidField.classList.add('hidden-element');
+                companyInput.required = false;
+                vatidInput.required = false;
+                companyInput.value = "";
+                vatidInput.value = "";
+            }
+
+            // Alles neu rendern basierend auf der Steuerungs-Matrix
             renderProducts();
             updateCartUI();
             renderOrdersLog();
-            checkCookieConsent();
-        });
+        }
 
         function setShippingRequired(required) {
             const fields = ['shipping-firstname', 'shipping-lastname', 'shipping-street', 'shipping-streetno', 'shipping-zip', 'shipping-city'];
@@ -258,28 +361,33 @@
 
             if (tabName === 'shop') document.getElementById('tab-shop').classList.remove('hidden-element');
             if (tabName === 'cart') document.getElementById('tab-cart').classList.remove('hidden-element');
-            if (tabName === 'orders') {
-                document.getElementById('tab-orders').classList.remove('hidden-element');
-                renderOrdersLog();
-            }
+            if (tabName === 'orders') document.getElementById('tab-orders').classList.remove('hidden-element');
         }
 
         function renderProducts() {
             const grid = document.getElementById('product-grid');
             if (!grid) return;
-            grid.innerHTML = products.map(p => `
-                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between p-5 hover:border-blue-400 transition">
-                    <div>
-                        <div class="text-xs font-mono text-gray-400">Art.-Nr.: ${p.id}</div>
-                        <h3 class="text-base font-bold text-gray-900 mt-1">${p.name}</h3>
-                        <p class="text-xs text-gray-500 mt-2">${p.desc}</p>
+            
+            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
+
+            grid.innerHTML = products.map(p => {
+                const displayPrice = isB2B ? p.priceNetto : (p.priceNetto * 1.19);
+                const suffix = isB2B ? " € net." : " €";
+
+                return `
+                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between p-5 hover:border-blue-400 transition">
+                        <div>
+                            <div class="text-xs font-mono text-gray-400">Art.-Nr.: ${p.id}</div>
+                            <h3 class="text-base font-bold text-gray-900 mt-1">${p.name}</h3>
+                            <p class="text-xs text-gray-500 mt-2">${p.desc}</p>
+                        </div>
+                        <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div class="text-lg font-black text-gray-900">${displayPrice.toFixed(2).replace('.', ',')}${suffix}</div>
+                            <button type="button" data-action="add-to-cart" data-id="${p.id}" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs font-bold transition">In den Warenkorb</button>
+                        </div>
                     </div>
-                    <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                        <div class="text-lg font-black text-gray-900">${p.price.toFixed(2).replace('.', ',')} €</div>
-                        <button type="button" data-action="add-to-cart" data-id="${p.id}" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs font-bold transition">In den Warenkorb</button>
-                    </div>
-                </div>
-            `).join('');
+                `;
+            }).join('');
         }
 
         function addToCart(productId) {
@@ -311,6 +419,7 @@
             const addressBox = document.getElementById('checkout-address-box');
             
             const totalItems = cart.reduce((acc, item) => acc + item.qty, 0);
+            const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
             
             if (totalItems > 0) {
                 if(countBadge) { countBadge.textContent = totalItems; countBadge.classList.remove('hidden-element'); }
@@ -320,64 +429,75 @@
             } else {
                 if(countBadge) countBadge.classList.add('hidden-element');
                 if(emptyState) emptyState.classList.remove('hidden-element');
-                if(summaryBox) summaryBox.add ? summaryBox.classList.add('hidden-element') : summaryBox.className += ' hidden-element';
+                if(summaryBox) summaryBox.classList.add('hidden-element');
                 if(addressBox) addressBox.classList.add('hidden-element');
                 document.getElementById('shipping-address-box').classList.add('hidden-element');
                 document.getElementById('toggle-shipping-address').checked = false;
             }
 
-            let subtotal = 0;
+            let calculatedNettoSum = 0;
             if(container) {
                 container.innerHTML = cart.map(item => {
                     const product = products.find(p => p.id === item.id);
                     if (!product) return '';
-                    const itemTotal = product.price * item.qty;
-                    subtotal += itemTotal;
+                    
+                    calculatedNettoSum += (product.priceNetto * item.qty);
+                    const singleDisplayPrice = isB2B ? product.priceNetto : (product.priceNetto * 1.19);
+                    const itemDisplayTotal = singleDisplayPrice * item.qty;
+
                     return `
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between gap-4">
                             <div class="flex-grow">
                                 <h4 class="text-sm font-bold text-gray-900">${product.name}</h4>
-                                <div class="text-xs text-gray-400 font-mono mt-0.5">${product.price.toFixed(2).replace('.', ',')} €</div>
+                                <div class="text-xs text-gray-400 font-mono mt-0.5">${singleDisplayPrice.toFixed(2).replace('.', ',')} €</div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="-1" class="w-7 h-7 bg-gray-100 rounded font-bold text-sm flex items-center justify-center">-</button>
                                 <span class="text-sm font-semibold w-6 text-center">${item.qty}</span>
                                 <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="1" class="w-7 h-7 bg-gray-100 rounded font-bold text-sm flex items-center justify-center">+</button>
                             </div>
-                            <div class="text-sm font-bold text-gray-900 w-20 text-right">${itemTotal.toFixed(2).replace('.', ',')} €</div>
+                            <div class="text-sm font-bold text-gray-900 w-24 text-right">${itemDisplayTotal.toFixed(2).replace('.', ',')} €</div>
                         </div>
                     `;
                 }).join('');
             }
 
             const shipping = 4.90;
-            const totalBrutto = subtotal + shipping;
-            const totalNetto = subtotal / 1.19;
-            const totalTax = subtotal - totalNetto;
+            const totalTax = calculatedNettoSum * 0.19;
+            const totalBrutto = calculatedNettoSum + totalTax + shipping;
 
-            if(document.getElementById('price-net')) document.getElementById('price-net').textContent = subtotal > 0 ? `${totalNetto.toFixed(2).replace('.', ',')} €` : "0,00 €";
-            if(document.getElementById('price-tax')) document.getElementById('price-tax').textContent = subtotal > 0 ? `${totalTax.toFixed(2).replace('.', ',')} €` : "0,00 €";
-            if(document.getElementById('price-shipping')) document.getElementById('price-shipping').textContent = subtotal > 0 ? `${shipping.toFixed(2).replace('.', ',')} €` : "0,00 €";
-            if(document.getElementById('price-total')) document.getElementById('price-total').textContent = subtotal > 0 ? `${totalBrutto.toFixed(2).replace('.', ',')} €` : "0,00 €";
+            if(document.getElementById('price-net')) document.getElementById('price-net').textContent = calculatedNettoSum > 0 ? `${calculatedNettoSum.toFixed(2).replace('.', ',')} €` : "0,00 €";
+            if(document.getElementById('price-tax')) document.getElementById('price-tax').textContent = calculatedNettoSum > 0 ? `${totalTax.toFixed(2).replace('.', ',')} €` : "0,00 €";
+            if(document.getElementById('price-shipping')) document.getElementById('price-shipping').textContent = calculatedNettoSum > 0 ? `${shipping.toFixed(2).replace('.', ',')} €` : "0,00 €";
+            if(document.getElementById('price-total')) document.getElementById('price-total').textContent = calculatedNettoSum > 0 ? `${totalBrutto.toFixed(2).replace('.', ',')} €` : "0,00 €";
         }
 
         function executeOrder() {
             const form = document.getElementById('address-form');
             if (form && !form.checkValidity()) { form.reportValidity(); return; }
             if (!document.getElementById('legal-agb').checked || !document.getElementById('legal-privacy').checked) {
-                alert("Verbraucherschutz-Hinweis: Bitte akzeptieren Sie die AGB und Datenschutzbestimmungen."); return;
+                alert("Bitte akzeptieren Sie die Bedingungen."); return;
             }
             
-            let subtotal = cart.reduce((acc, item) => {
+            let calculatedNettoSum = cart.reduce((acc, item) => {
                 const p = products.find(prod => prod.id === item.id);
-                return acc + (p ? p.price * item.qty : 0);
+                return acc + (p ? p.priceNetto * item.qty : 0);
             }, 0);
 
-            // ERP STRUCT-BUILDER
+            const shipping = 4.90;
+            const totalTax = calculatedNettoSum * 0.19;
+            const totalBrutto = calculatedNettoSum + totalTax + shipping;
+
             const orderPayload = {
                 orderId: "ORD-" + Date.now().toString().slice(-6),
+                erpContext: ClavisErpModuleConfig.contextMode,
                 timestamp: new Date().toISOString(),
-                totals: { net: (subtotal/1.19), tax: (subtotal-(subtotal/1.19)), shipping: 4.90, gross: subtotal + 4.90 },
+                totals: { 
+                    net: calculatedNettoSum, 
+                    tax: totalTax, 
+                    shipping: shipping, 
+                    gross: totalBrutto 
+                },
                 customer: {
                     company: document.getElementById('billing-company').value,
                     vatId: document.getElementById('billing-vatid').value,
@@ -404,38 +524,37 @@
                 } : null,
                 lines: cart.map(item => {
                     const p = products.find(prod => prod.id === item.id);
-                    return { itemNo: item.id, sku: p.sku, name: p.name, quantity: item.qty, unitPrice: p.price };
+                    return { itemNo: item.id, sku: p.sku, name: p.name, quantity: item.qty, unitPriceNet: p.priceNetto };
                 })
             };
 
-            orders.unshift(newOrderPayloadForLog(orderPayload));
+            orders.unshift({
+                orderId: orderPayload.orderId,
+                date: new Date().toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' }),
+                total: orderPayload.totals.gross,
+                context: orderPayload.erpContext
+            });
+
             try { localStorage.setItem('clavis_shop_orders', JSON.stringify(orders)); } catch(e){}
 
-            // LOG IN CONSOLE FÜR ENTWICKLER
-            console.log("ERP-Payload generiert:", JSON.stringify(orderPayload, null, 2));
-
-            alert(`Vielen Dank! Ihre ERP-Bestellung wurde erfasst. Nummer: ${orderPayload.orderId}`);
+            alert(`Vielen Dank! Ihre [${orderPayload.erpContext}] ERP-Bestellung wurde übermittelt. Nummer: ${orderPayload.orderId}`);
             cart = []; saveCart(); updateCartUI(); switchTab('orders');
-        }
-
-        function newOrderPayloadForLog(payload) {
-            return {
-                orderId: payload.orderId,
-                date: new Date(payload.timestamp).toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' }),
-                total: payload.totals.gross
-            };
         }
 
         function renderOrdersLog() {
             const container = document.getElementById('orders-log-container');
             if(!container) return;
             if (orders.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 text-center rounded-xl border border-gray-200 text-gray-500">Bisher keine Bestellungen getätigt.</div>`;
+                container.innerHTML = `<div class="bg-white p-6 text-center rounded-xl border border-gray-200 text-gray-500">Bisher keine Bestellungen vorhanden.</div>`;
                 return;
             }
             container.innerHTML = orders.map(o => `
                 <div class="bg-white p-4 border border-gray-200 rounded-xl shadow-sm flex justify-between items-center">
-                    <div><span class="font-bold text-blue-600">${o.orderId}</span><span class="text-xs text-gray-400 ml-2">vom ${o.date}</span></div>
+                    <div>
+                        <span class="font-bold text-blue-600">${o.orderId}</span>
+                        <span class="text-xxs uppercase ml-2 px-1.5 py-0.5 rounded font-bold ${o.context === 'B2B' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${o.context}</span>
+                        <span class="text-xs text-gray-400 ml-2">vom ${o.date}</span>
+                    </div>
                     <div class="font-bold">${o.total.toFixed(2).replace('.', ',')} €</div>
                 </div>
             `).join('');

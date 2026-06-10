@@ -1,22 +1,20 @@
-const CACHE_NAME = 'clavis-store-v1';
+const CACHE_NAME = 'clavis-store-v2';
 const ASSETS = [
-  './',
   './index.html',
-  './manifest.json',
-  'https://cdn.tailwindcss.com'
+  './manifest.json'
 ];
 
-// Service Worker installieren und Assets cachen
+// Installieren: Assets cachen, aber Fehler ignorieren, damit die App nicht blockiert
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS);
+      return cache.addAll(ASSETS).catch(err => console.log("Cache-Aufbau übersprungen/mobil toleriert:", err));
     })
   );
   self.skipWaiting();
 });
 
-// Alten Cache aufräumen bei Aktualisierungen
+// Aktivieren und alten Cache löschen
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) => {
@@ -32,13 +30,17 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Netzwerk-First-Strategie mit Cache-FallBack für maximale Aktualität offline
+// Netzwerk-First-Strategie: Wenn das Netzwerk da ist, lade immer live!
 self.addEventListener('fetch', (event) => {
+  // Verhindert Abstürze bei externen CDN-Aufrufen wie Tailwind
+  if (!event.request.url.startsWith(self.location.origin)) {
+    return; 
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
-        // Wenn eine erfolgreiche Netzwerk-Antwort kommt, ab in den Cache damit
-        if (response.status === 200) {
+        if (response && response.status === 200) {
           const responseClone = response.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseClone);
@@ -47,8 +49,8 @@ self.addEventListener('fetch', (event) => {
         return response;
       })
       .catch(() => {
-        // Offline-Modus: Aus dem Cache laden, wenn das Netzwerk versagt
         return caches.match(event.request);
       })
   );
 });
+

@@ -12,24 +12,29 @@
     <style>
         .hidden-element { display: none !important; }
         button, a { touch-action: manipulation; }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-900 font-sans min-h-screen flex flex-col">
+<body class="bg-[#f8fafc] text-slate-900 font-sans min-h-screen flex flex-col antialiased">
 
-    <div class="bg-slate-900 text-white border-b-4 border-blue-600 p-3 text-xs">
+    <div class="bg-slate-900 text-slate-200 border-b border-slate-800 px-4 py-3 text-xs font-medium sticky top-0 z-50 shadow-lg shadow-slate-900/10">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-2 font-mono">
-                <span class="inline-block h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                <strong>CLAVIS ERP v14 Integration Matrix</strong>
+            <div class="flex items-center gap-2.5 font-mono tracking-wider text-slate-400">
+                <span class="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>CORE:<span class="text-white font-bold">CLAVIS_ERP_v14</span></span>
             </div>
-            <div class="flex flex-wrap items-center gap-4">
-                <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" id="erp-module-active" data-action="sync-erp-switch" class="rounded border-gray-600 text-blue-500 bg-slate-800 focus:ring-0" checked>
-                    <span>Shop-Modul im ERP aktiv</span>
+            <div class="flex flex-wrap items-center gap-6">
+                <label class="flex items-center gap-2 cursor-pointer select-none group">
+                    <input type="checkbox" id="erp-module-active" data-action="sync-erp-switch" class="rounded border-slate-700 text-blue-600 bg-slate-800 focus:ring-0 focus:ring-offset-0 h-4 w-4 transition cursor-pointer">
+                    <span class="text-slate-300 group-hover:text-white transition">Shop-Modul Aktivieren</span>
                 </label>
-                <div id="erp-mode-selector-zone" class="flex items-center gap-2">
-                    <span>Modus:</span>
-                    <select id="erp-business-context" data-action="sync-erp-context" class="bg-slate-800 border border-slate-700 rounded px-2 py-1 text-white font-bold focus:outline-none">
+                <div id="erp-mode-selector-zone" class="flex items-center gap-2.5">
+                    <span class="text-slate-400">Mandanten-Kontext:</span>
+                    <select id="erp-business-context" data-action="sync-erp-context" class="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-1 text-xs font-bold text-blue-400 focus:outline-none focus:border-blue-500 transition cursor-pointer">
                         <option value="B2C">B2C (Endkunde / Brutto)</option>
                         <option value="B2B">B2B (Geschäftskunde / Netto)</option>
                     </select>
@@ -38,128 +43,128 @@
         </div>
     </div>
 
-    <div id="erp-disabled-screen" class="fixed inset-0 bg-gray-100 z-50 flex flex-col items-center justify-center p-6 hidden-element">
-        <div class="bg-white p-8 rounded-2xl shadow-xl max-w-md text-center border border-gray-200">
-            <div class="text-red-500 w-16 h-16 mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+    <div id="erp-disabled-screen" class="fixed inset-0 bg-slate-900/40 backdrop-blur-md z-50 flex flex-col items-center justify-center p-6 hidden-element">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl max-w-md text-center border border-slate-100 max-w-sm">
+            <div class="text-rose-500 w-12 h-12 mx-auto mb-4 bg-rose-50 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" class="w-6 h-6">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
             </div>
-            <h2 class="text-xl font-black text-gray-900">Schnittstelle deaktiviert</h2>
-            <p class="text-sm text-gray-500 mt-2">Das E-Commerce-Erweiterungsmodul wurde in den CLAVIS-ERP-Mandanteneinstellungen vorübergehend deaktiviert. Es werden keine Bestellungen entgegengenommen.</p>
+            <h2 class="text-lg font-bold text-slate-900 tracking-tight">Schnittstelle inaktiv</h2>
+            <p class="text-xs text-slate-500 mt-2 leading-relaxed">Das E-Commerce-Erweiterungsmodul wurde in den CLAVIS-ERP-Mandanteneinstellungen vorübergehend deaktiviert.</p>
         </div>
     </div>
 
-    <div id="cookie-banner" class="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-40 shadow-2xl transition-all duration-300">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="text-sm">
-                <p class="font-semibold mb-1">Cookie- & Datenschutzeinstellungen</p>
-                <p class="text-gray-400">Wir nutzen Cookies für den Betrieb des Marktplatzes. Weitere Informationen in der <a href="#" data-action="open-modal" data-modal="privacy" class="underline hover:text-blue-400">Datenschutzerklärung</a>.</p>
+    <div id="cookie-banner" class="fixed bottom-5 left-5 right-5 md:left-auto md:max-w-md bg-slate-900 text-white p-5 z-40 rounded-2xl shadow-2xl border border-slate-800 transition-all duration-300">
+        <div class="space-y-4">
+            <div class="text-xs">
+                <p class="font-bold text-sm tracking-tight mb-1">Privacy Gateway</p>
+                <p class="text-slate-400 leading-relaxed">Wir nutzen essenzielle Cookies für den lokalen Abgleich der ERP-Datenstrukturen. Details in der <a href="#" data-action="open-modal" data-modal="privacy" class="text-blue-400 underline hover:text-blue-300">Datenschutzerklärung</a>.</p>
             </div>
-            <div class="flex gap-3 shrink-0">
-                <button data-action="cookie-consent" data-consent="essential" class="px-4 py-2 text-xs bg-gray-700 hover:bg-gray-600 rounded font-medium transition">Nur essenzielle</button>
-                <button data-action="cookie-consent" data-consent="all" class="px-4 py-2 text-xs bg-blue-600 hover:bg-blue-500 rounded font-bold transition">Alle akzeptieren</button>
+            <div class="flex gap-2.5 justify-end">
+                <button data-action="cookie-consent" data-consent="essential" class="px-3.5 py-1.5 text-xxs tracking-wider uppercase bg-slate-800 hover:bg-slate-700 rounded-lg font-semibold transition">Essenziell</button>
+                <button data-action="cookie-consent" data-consent="all" class="px-3.5 py-1.5 text-xxs tracking-wider uppercase bg-blue-600 hover:bg-blue-500 rounded-lg font-bold transition">Zustimmen</button>
             </div>
         </div>
     </div>
 
-    <header class="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="bg-blue-600 text-white p-2 rounded-xl flex items-center justify-center shadow-md">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+    <header class="bg-white/80 backdrop-blur-md border-b border-slate-200/80 sticky top-[41px] z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3.5">
+                <div class="bg-gradient-to-tr from-blue-600 to-indigo-600 text-white p-2.5 rounded-xl flex items-center justify-center shadow-md shadow-blue-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m-2 4a2 2 0 012-2m-2 4a5 5 0 11-5-5h7.938l3 3 1.062-1.062 1.062 1.062L22 13V9a2 2 0 00-2-2h-9.062a5 5 0 00-7.876 3c-.022.148-.034.3-.034.454a5 5 0 005 5h3.586l.707.707a1 1 0 001.414 0l1.414-1.414a1 1 0 000-1.414l-.707-.707V13H15z" />
                     </svg>
                 </div>
                 <div class="flex flex-col">
-                    <span class="text-xl font-black tracking-wider text-gray-900 leading-none">CLAVIS</span>
-                    <span id="erp-badge" class="text-xxs font-bold uppercase tracking-widest text-blue-600 mt-0.5">B2C Store</span>
+                    <span class="text-lg font-black tracking-tight text-slate-900 leading-none">CLAVIS</span>
+                    <span id="erp-badge" class="text-[10px] font-bold uppercase tracking-widest text-blue-600 mt-1">B2C Store</span>
                 </div>
             </div>
 
-            <nav class="flex items-center gap-6">
-                <button data-action="switch-tab" data-tab="shop" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">Shop</button>
-                <button data-action="switch-tab" data-tab="cart" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">
+            <nav class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                <button data-action="switch-tab" data-tab="shop" class="px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium">Shop</button>
+                <button data-action="switch-tab" data-tab="cart" class="px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium relative">
                     Warenkorb
-                    <span id="cart-count" class="absolute -top-1 -right-4 bg-red-500 text-white text-xxs font-bold rounded-full h-5 w-5 flex items-center justify-center hidden">0</span>
+                    <span id="cart-count" class="absolute -top-1.5 -right-1 bg-blue-600 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center hidden shadow-sm">0</span>
                 </button>
-                <button data-action="switch-tab" data-tab="orders" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">Bestellungen</button>
+                <button data-action="switch-tab" data-tab="orders" class="px-4 py-2 rounded-lg text-slate-600 hover:text-slate-900 transition font-medium">Bestellungen</button>
             </nav>
         </div>
     </header>
 
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        <section id="tab-shop" class="space-y-6">
-            <div class="border-b border-gray-200 pb-4">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900" id="shop-main-title">Unsere Produkte</h1>
-                <p class="text-sm text-gray-500 mt-1" id="shop-tax-notice">Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.</p>
+        <section id="tab-shop" class="space-y-8">
+            <div class="space-y-1">
+                <h1 class="text-3xl font-black tracking-tight text-slate-900" id="shop-main-title">Unsere Produkte</h1>
+                <p class="text-xs text-slate-500 font-medium" id="shop-tax-notice">Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.</p>
             </div>
             <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
-        <section id="tab-cart" class="hidden-element space-y-6">
-            <div class="border-b border-gray-200 pb-4">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Ihr Warenkorb</h1>
+        <section id="tab-cart" class="hidden-element space-y-8">
+            <div>
+                <h1 class="text-3xl font-black tracking-tight text-slate-900">Ihr Warenkorb</h1>
             </div>
             
             <form id="address-form" onsubmit="event.preventDefault();" class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
                 <div class="lg:col-span-2 space-y-6">
-                    <div id="cart-empty" class="bg-white p-8 text-center rounded-xl border border-gray-200 shadow-sm">
-                        <p class="text-gray-500">Ihr Warenkorb ist aktuell leer.</p>
-                        <button type="button" data-action="switch-tab" data-tab="shop" class="mt-4 inline-flex items-center text-sm font-semibold text-blue-600 hover:text-blue-500">← Zurück zum Shop</button>
+                    <div id="cart-empty" class="bg-white p-12 text-center rounded-2xl border border-slate-200/60 shadow-sm">
+                        <p class="text-slate-400 text-sm font-medium">Ihr Warenkorb ist aktuell leer.</p>
+                        <button type="button" data-action="switch-tab" data-tab="shop" class="mt-4 text-xs font-bold text-blue-600 hover:text-blue-500 transition">← Zurück zum Shop</button>
                     </div>
-                    <div id="cart-items-container" class="space-y-4"></div>
+                    <div id="cart-items-container" class="space-y-3"></div>
                     
-                    <div id="checkout-address-box" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden-element">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Rechnungsadresse (Stammdaten)</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                    <div id="checkout-address-box" class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-5 hidden-element">
+                        <h2 class="text-base font-bold text-slate-900 tracking-tight border-b border-slate-100 pb-3">Rechnungsadresse (ERP-Stammdaten)</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                             <div id="b2b-field-company" class="hidden-element">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Firma / Organisation *</label>
-                                <input type="text" id="billing-company" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Firma / Organisation *</label>
+                                <input type="text" id="billing-company" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium">
                             </div>
                             <div id="b2b-field-vatid" class="hidden-element">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">USt-IdNr. *</label>
-                                <input type="text" id="billing-vatid" placeholder="DE123456789" class="w-full border border-gray-300 rounded-lg p-2 font-mono focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">USt-IdNr. *</label>
+                                <input type="text" id="billing-vatid" placeholder="DE123456789" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 font-mono focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition">
                             </div>
                             
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Vorname *</label><input type="text" id="billing-firstname" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Nachname *</label><input type="text" id="billing-lastname" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div class="sm:col-span-2"><label class="block text-xs font-semibold text-gray-600 mb-1">E-Mail-Adresse *</label><input type="email" id="billing-email" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div class="flex-grow"><label class="block text-xs font-semibold text-gray-600 mb-1">Straße *</label><input type="text" id="billing-street" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div class="w-24 sm:w-auto"><label class="block text-xs font-semibold text-gray-600 mb-1">Nr. *</label><input type="text" id="billing-streetno" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Postleitzahl *</label><input type="text" id="billing-zip" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Ort *</label><input type="text" id="billing-city" required class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Vorname *</label><input type="text" id="billing-firstname" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Nachname *</label><input type="text" id="billing-lastname" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div class="sm:col-span-2"><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">E-Mail-Adresse *</label><input type="email" id="billing-email" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div class="flex-grow"><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Straße *</label><input type="text" id="billing-street" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div class="w-24 sm:w-auto"><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Nr. *</label><input type="text" id="billing-streetno" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Postleitzahl *</label><input type="text" id="billing-zip" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Ort *</label><input type="text" id="billing-city" required class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Land *</label>
-                                <select id="billing-country" class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Land *</label>
+                                <select id="billing-country" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium cursor-pointer">
                                     <option value="DE">Deutschland</option><option value="AT">Österreich</option><option value="CH">Schweiz</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="pt-4 border-t border-gray-100">
-                            <label class="flex items-center gap-3 cursor-pointer text-sm font-semibold text-gray-700">
-                                <input type="checkbox" id="toggle-shipping-address" data-action="toggle-shipping" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4">
-                                <span>Lieferadresse weicht von Rechnungsadresse ab</span>
+                        <div class="pt-2">
+                            <label class="flex items-center gap-3 cursor-pointer text-xs font-semibold text-slate-700 select-none">
+                                <input type="checkbox" id="toggle-shipping-address" data-action="toggle-shipping" class="rounded border-slate-300 text-blue-600 focus:ring-0 h-4 w-4 cursor-pointer">
+                                <span>Abweichende Lieferadresse angeben</span>
                             </label>
                         </div>
                     </div>
 
-                    <div id="shipping-address-box" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-4 hidden-element">
-                        <h2 class="text-lg font-bold text-gray-900 border-b border-gray-100 pb-2">Abweichende Lieferadresse</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Firma / z.H. von</label><input type="text" id="shipping-company" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                    <div id="shipping-address-box" class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-sm space-y-5 hidden-element">
+                        <h2 class="text-base font-bold text-slate-900 tracking-tight border-b border-slate-100 pb-3">Abweichende Lieferadresse</h2>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Firma / z.H. von</label><input type="text" id="shipping-company" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
                             <div class="hidden sm:block"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Vorname *</label><input type="text" id="shipping-firstname" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Nachname *</label><input type="text" id="shipping-lastname" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div class="flex-grow"><label class="block text-xs font-semibold text-gray-600 mb-1">Straße *</label><input type="text" id="shipping-street" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div class="w-24 sm:w-auto"><label class="block text-xs font-semibold text-gray-600 mb-1">Nr. *</label><input type="text" id="shipping-streetno" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Postleitzahl *</label><input type="text" id="shipping-zip" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
-                            <div><label class="block text-xs font-semibold text-gray-600 mb-1">Ort *</label><input type="text" id="shipping-city" class="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Vorname *</label><input type="text" id="shipping-firstname" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Nachname *</label><input type="text" id="shipping-lastname" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div class="flex-grow"><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Straße *</label><input type="text" id="shipping-street" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div class="w-24 sm:w-auto"><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Nr. *</label><input type="text" id="shipping-streetno" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Postleitzahl *</label><input type="text" id="shipping-zip" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
+                            <div><label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Ort *</label><input type="text" id="shipping-city" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium"></div>
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold text-gray-600 mb-1">Land *</label>
-                                <select id="shipping-country" class="w-full border border-gray-300 rounded-lg p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                                <label class="block text-slate-500 font-bold mb-1.5 uppercase tracking-wider text-[10px]">Land *</label>
+                                <select id="shipping-country" class="w-full bg-slate-50/50 border border-slate-200 rounded-xl p-3 bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:outline-none transition font-medium cursor-pointer">
                                     <option value="DE">Deutschland</option><option value="AT">Österreich</option><option value="CH">Schweiz</option>
                                 </select>
                             </div>
@@ -167,67 +172,66 @@
                     </div>
                 </div>
 
-                <div id="checkout-summary-box" class="bg-white p-6 rounded-xl border border-gray-200 shadow-sm space-y-6 hidden-element sticky top-24">
-                    <h2 class="text-lg font-bold text-gray-900">Bestellübersicht</h2>
-                    <div class="space-y-2 text-sm border-b border-gray-100 pb-4">
-                        <div class="flex justify-between text-gray-600"><span>Zwischensumme (Netto):</span><span id="price-net">0,00 €</span></div>
-                        <div class="flex justify-between text-gray-600"><span>+ 19% MwSt.:</span><span id="price-tax">0,00 €</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Versandkosten:</span><span id="price-shipping">4,90 €</span></div>
-                        <div class="flex justify-between font-bold text-base text-gray-900 pt-2 border-t border-gray-100"><span>Gesamtsumme (Brutto):</span><span id="price-total">0,00 €</span></div>
+                <div id="checkout-summary-box" class="bg-white p-6 rounded-2xl border border-slate-200/60 shadow-md space-y-6 hidden-element sticky top-40">
+                    <h2 class="text-base font-bold text-slate-900 tracking-tight">Bestellübersicht</h2>
+                    <div class="space-y-3 text-xs border-b border-slate-100 pb-4 font-medium">
+                        <div class="flex justify-between text-slate-500"><span>Zwischensumme (Netto):</span><span id="price-net" class="font-mono text-slate-900">0,00 €</span></div>
+                        <div class="flex justify-between text-slate-500"><span>+ 19% MwSt.:</span><span id="price-tax" class="font-mono text-slate-900">0,00 €</span></div>
+                        <div class="flex justify-between text-slate-500"><span>Versandkosten:</span><span id="price-shipping" class="font-mono text-slate-900">4,90 €</span></div>
+                        <div class="flex justify-between font-bold text-sm text-slate-900 pt-3 border-t border-slate-100"><span>Gesamtsumme (Brutto):</span><span id="price-total" class="font-mono text-blue-600 text-base">0,00 €</span></div>
                     </div>
-                    <div class="space-y-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
-                        <label class="flex items-start gap-3 cursor-pointer text-xs text-gray-600">
-                            <input type="checkbox" id="legal-agb" class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span>Ich habe die <a href="#" data-action="open-modal" data-modal="agb" class="text-blue-600 underline">AGB</a> sowie die <a href="#" data-action="open-modal" data-modal="withdrawal" class="text-blue-600 underline">Widerrufsbelehrung</a> gelesen.</span>
+                    <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <label class="flex items-start gap-3 cursor-pointer text-[11px] font-medium text-slate-500 select-none">
+                            <input type="checkbox" id="legal-agb" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-0 h-3.5 w-3.5 cursor-pointer">
+                            <span>Ich akzeptiere die <a href="#" data-action="open-modal" data-modal="agb" class="text-blue-600 underline">AGB</a> und die <a href="#" data-action="open-modal" data-modal="withdrawal" class="text-blue-600 underline">Widerrufsbelehrung</a>.</span>
                         </label>
-                        <label class="flex items-start gap-3 cursor-pointer text-xs text-gray-600">
-                            <input type="checkbox" id="legal-privacy" class="mt-0.5 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                            <span>Ich stimme der <a href="#" data-action="open-modal" data-modal="privacy" class="text-blue-600 underline">Datenschutzerklärung</a> zu.</span>
+                        <label class="flex items-start gap-3 cursor-pointer text-[11px] font-medium text-slate-500 select-none">
+                            <input type="checkbox" id="legal-privacy" class="mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-0 h-3.5 w-3.5 cursor-pointer">
+                            <span>Ich willige in die <a href="#" data-action="open-modal" data-modal="privacy" class="text-blue-600 underline">Datenschutzerklärung</a> ein.</span>
                         </label>
                     </div>
-                    <button type="submit" data-action="submit-order" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white py-3 px-4 rounded-lg font-bold text-center transition shadow focus:outline-none">Zahlungspflichtig bestellen</button>
+                    <button type="submit" data-action="submit-order" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3.5 px-4 rounded-xl font-bold text-xs uppercase tracking-wider transition shadow-lg shadow-blue-500/10 active:scale-[0.99] focus:outline-none">Zahlungspflichtig bestellen</button>
                 </div>
             </form>
         </section>
 
         <section id="tab-orders" class="hidden-element space-y-6">
-            <div class="border-b border-gray-200 pb-4">
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Deine Bestellhistorie</h1>
+            <div class="border-b border-slate-100 pb-4">
+                <h1 class="text-3xl font-black tracking-tight text-slate-900">Deine Bestellhistorie</h1>
             </div>
-            <div id="orders-log-container" class="space-y-4"></div>
+            <div id="orders-log-container" class="space-y-3"></div>
         </section>
     </main>
 
-    <footer class="bg-white border-t border-gray-200 text-xs text-gray-500 py-6 mt-12">
+    <footer class="bg-white border-t border-slate-200 text-xxs font-bold uppercase tracking-wider text-slate-400 py-8 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>&copy; 2026 CLAVIS ERP Ecosystem.</div>
-            <div class="flex gap-6">
-                <a href="#" data-action="open-modal" data-modal="impressum" class="hover:text-blue-600 underline">Impressum</a>
-                <a href="#" data-action="open-modal" data-modal="privacy" class="hover:text-blue-600 underline">Datenschutz</a>
-                <a href="#" data-action="open-modal" data-modal="agb" class="hover:text-blue-600 underline">AGB</a>
-                <a href="#" data-action="open-modal" data-modal="withdrawal" class="hover:text-blue-600 underline">Widerrufsbelehrung</a>
+            <div class="flex gap-6 font-semibold">
+                <a href="#" data-action="open-modal" data-modal="impressum" class="hover:text-blue-600 transition underline">Impressum</a>
+                <a href="#" data-action="open-modal" data-modal="privacy" class="hover:text-blue-600 transition underline">Datenschutz</a>
+                <a href="#" data-action="open-modal" data-modal="agb" class="hover:text-blue-600 transition underline">AGB</a>
+                <a href="#" data-action="open-modal" data-modal="withdrawal" class="hover:text-blue-600 transition underline">Widerruf</a>
             </div>
         </div>
     </footer>
 
-    <div id="legal-modal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden-element">
-        <div class="bg-white w-full max-w-2xl rounded-xl shadow-2xl max-h-[80vh] flex flex-col">
-            <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                <h3 id="modal-title" class="text-lg font-bold text-gray-900">Rechtstext</h3>
-                <button type="button" data-action="close-modal" class="text-gray-400 hover:text-gray-600 text-xl font-bold">&times;</button>
+    <div id="legal-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden-element">
+        <div class="bg-white w-full max-w-xl rounded-2xl shadow-2xl max-h-[75vh] flex flex-col border border-slate-100">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 id="modal-title" class="text-sm font-bold text-slate-900 uppercase tracking-wider">Rechtstext</h3>
+                <button type="button" data-action="close-modal" class="text-slate-400 hover:text-slate-600 text-lg font-bold transition">&times;</button>
             </div>
-            <div id="modal-body" class="p-6 overflow-y-auto text-sm text-gray-600 space-y-4"></div>
-            <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-end">
-                <button type="button" data-action="close-modal" class="bg-gray-900 hover:bg-gray-800 text-white px-4 py-2 rounded text-xs font-semibold">Schließen</button>
+            <div id="modal-body" class="p-6 overflow-y-auto text-xs text-slate-600 space-y-4 leading-relaxed font-medium"></div>
+            <div class="p-4 border-t border-slate-50 bg-slate-50/50 flex justify-end">
+                <button type="button" data-action="close-modal" class="bg-slate-900 hover:bg-slate-800 text-white px-4 py-2 rounded-xl text-xxs font-bold uppercase tracking-wider transition">Schließen</button>
             </div>
         </div>
     </div>
 
     <script>
-        // Globales ERP-Konfigurations-Modul
         let ClavisErpModuleConfig = {
             isActive: true,
-            contextMode: "B2C" // B2C oder B2B
+            contextMode: "B2C"
         };
 
         const products = [
@@ -258,7 +262,16 @@
 
             const action = target.getAttribute("data-action");
 
-            if (action === "switch-tab") switchTab(target.getAttribute("data-tab"));
+            if (action === "switch-tab") {
+                switchTab(target.getAttribute("data-tab"));
+                // Aktiven Nav-Button optisch hervorheben
+                document.querySelectorAll('[data-action="switch-tab"]').forEach(btn => {
+                    btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+                    btn.classList.add('text-slate-600');
+                });
+                target.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+                target.classList.remove('text-slate-600');
+            }
             if (action === "add-to-cart") addToCart(target.getAttribute("data-id"));
             if (action === "qty-change") updateQty(target.getAttribute("data-id"), parseInt(target.getAttribute("data-delta")));
             if (action === "cookie-consent") acceptCookies(target.getAttribute("data-consent"));
@@ -280,7 +293,6 @@
             }
         });
 
-        // INPUT EVENT LISTENER FÜR DIE ERP MATRIX PANEL STEUERUNG
         document.addEventListener("change", (event) => {
             if (event.target.matches("[data-action='sync-erp-switch']")) {
                 ClavisErpModuleConfig.isActive = event.target.checked;
@@ -293,15 +305,17 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            // UI Controls mit lokalem Zustand synchronisieren vor dem ersten Render
             document.getElementById('erp-module-active').checked = ClavisErpModuleConfig.isActive;
             document.getElementById('erp-business-context').value = ClavisErpModuleConfig.contextMode;
             
+            // Initialen Tab-Zustand für Navigation setzen
+            const firstTab = document.querySelector('[data-action="switch-tab"][data-tab="shop"]');
+            if(firstTab) firstTab.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+
             applyErpModuleSettings();
             checkCookieConsent();
         });
 
-        // DIE ZENTRALE STEUERUNGSFUNKTION FÜR DAS EIN-/AUSSCHALTEN UND DEN MODUS
         function applyErpModuleSettings() {
             try { localStorage.setItem('clavis_erp_config', JSON.stringify(ClavisErpModuleConfig)); } catch(e){}
 
@@ -313,14 +327,12 @@
                 disabledScreen.classList.add('hidden-element');
             }
 
-            // UI an B2B oder B2C Kontext anpassen
             const isB2B = ClavisErpModuleConfig.contextMode === "B2B";
             
             document.getElementById('erp-badge').textContent = isB2B ? "B2B Ecosystem" : "B2C Store";
-            document.getElementById('shop-main-title').textContent = isB2B ? "B2B Produktkatalog (Netto)" : "Unsere Produkte";
-            document.getElementById('shop-tax-notice').textContent = isB2B ? "Alle Preise zzgl. gesetzlicher MwSt. und Versandkosten." : "Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.";
+            document.getElementById('shop-main-title').textContent = isB2B ? "B2B Katalog (Netto)" : "Unsere Produkte";
+            document.getElementById('shop-tax-notice').textContent = isB2B ? "Preise zzgl. gesetzlicher MwSt. und Versandkosten." : "Alle Preise inkl. gesetzlicher MwSt., zzgl. Versandkosten.";
 
-            // Felder im Formular ein- oder ausblenden & Validierung umschalten
             const companyField = document.getElementById('b2b-field-company');
             const vatidField = document.getElementById('b2b-field-vatid');
             const companyInput = document.getElementById('billing-company');
@@ -340,7 +352,6 @@
                 vatidInput.value = "";
             }
 
-            // Alles neu rendern basierend auf der Steuerungs-Matrix
             renderProducts();
             updateCartUI();
             renderOrdersLog();
@@ -375,15 +386,15 @@
                 const suffix = isB2B ? " € net." : " €";
 
                 return `
-                    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between p-5 hover:border-blue-400 transition">
+                    <div class="bg-white rounded-2xl border border-slate-200/60 shadow-sm overflow-hidden flex flex-col justify-between p-6 hover:shadow-md hover:border-slate-300 transition duration-200 transform hover:-translate-y-0.5">
                         <div>
-                            <div class="text-xs font-mono text-gray-400">Art.-Nr.: ${p.id}</div>
-                            <h3 class="text-base font-bold text-gray-900 mt-1">${p.name}</h3>
-                            <p class="text-xs text-gray-500 mt-2">${p.desc}</p>
+                            <div class="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">Art.-Nr.: ${p.id}</div>
+                            <h3 class="text-base font-bold text-slate-900 mt-1 tracking-tight">${p.name}</h3>
+                            <p class="text-xs font-medium text-slate-400 mt-2 leading-relaxed">${p.desc}</p>
                         </div>
-                        <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
-                            <div class="text-lg font-black text-gray-900">${displayPrice.toFixed(2).replace('.', ',')}${suffix}</div>
-                            <button type="button" data-action="add-to-cart" data-id="${p.id}" class="bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-md text-xs font-bold transition">In den Warenkorb</button>
+                        <div class="mt-6 pt-5 border-t border-slate-50 flex items-center justify-between">
+                            <div class="text-lg font-black text-slate-900 font-mono tracking-tight">${displayPrice.toFixed(2).replace('.', ',')}${suffix}</div>
+                            <button type="button" data-action="add-to-cart" data-id="${p.id}" class="bg-blue-600 hover:bg-blue-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-md shadow-blue-500/10">Hinzufügen</button>
                         </div>
                     </div>
                 `;
@@ -446,17 +457,17 @@
                     const itemDisplayTotal = singleDisplayPrice * item.qty;
 
                     return `
-                        <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm flex items-center justify-between gap-4">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-200/60 shadow-sm flex items-center justify-between gap-4">
                             <div class="flex-grow">
-                                <h4 class="text-sm font-bold text-gray-900">${product.name}</h4>
-                                <div class="text-xs text-gray-400 font-mono mt-0.5">${singleDisplayPrice.toFixed(2).replace('.', ',')} €</div>
+                                <h4 class="text-sm font-bold text-slate-900 tracking-tight">${product.name}</h4>
+                                <div class="text-xs text-slate-400 font-mono font-bold mt-0.5">${singleDisplayPrice.toFixed(2).replace('.', ',')} €</div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="-1" class="w-7 h-7 bg-gray-100 rounded font-bold text-sm flex items-center justify-center">-</button>
-                                <span class="text-sm font-semibold w-6 text-center">${item.qty}</span>
-                                <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="1" class="w-7 h-7 bg-gray-100 rounded font-bold text-sm flex items-center justify-center">+</button>
+                            <div class="flex items-center gap-1.5 bg-slate-50 p-1 rounded-xl">
+                                <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="-1" class="w-8 h-8 bg-white hover:bg-slate-100 rounded-lg shadow-sm font-bold text-xs flex items-center justify-center transition">-</button>
+                                <span class="text-xs font-bold w-6 text-center text-slate-800">${item.qty}</span>
+                                <button type="button" data-action="qty-change" data-id="${item.id}" data-delta="1" class="w-8 h-8 bg-white hover:bg-slate-100 rounded-lg shadow-sm font-bold text-xs flex items-center justify-center transition">+</button>
                             </div>
-                            <div class="text-sm font-bold text-gray-900 w-24 text-right">${itemDisplayTotal.toFixed(2).replace('.', ',')} €</div>
+                            <div class="text-sm font-black text-slate-900 font-mono w-24 text-right">${itemDisplayTotal.toFixed(2).replace('.', ',')} €</div>
                         </div>
                     `;
                 }).join('');
@@ -545,17 +556,17 @@
             const container = document.getElementById('orders-log-container');
             if(!container) return;
             if (orders.length === 0) {
-                container.innerHTML = `<div class="bg-white p-6 text-center rounded-xl border border-gray-200 text-gray-500">Bisher keine Bestellungen vorhanden.</div>`;
+                container.innerHTML = `<div class="bg-white p-8 text-center rounded-2xl border border-slate-200/60 text-slate-400 text-xs font-medium">Bisher keine Bestellungen vorhanden.</div>`;
                 return;
             }
             container.innerHTML = orders.map(o => `
-                <div class="bg-white p-4 border border-gray-200 rounded-xl shadow-sm flex justify-between items-center">
-                    <div>
-                        <span class="font-bold text-blue-600">${o.orderId}</span>
-                        <span class="text-xxs uppercase ml-2 px-1.5 py-0.5 rounded font-bold ${o.context === 'B2B' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'}">${o.context}</span>
-                        <span class="text-xs text-gray-400 ml-2">vom ${o.date}</span>
+                <div class="bg-white p-5 border border-slate-200/60 rounded-2xl shadow-sm flex justify-between items-center transition hover:border-slate-300">
+                    <div class="flex items-center gap-3">
+                        <span class="font-bold text-slate-900 font-mono tracking-tight">${o.orderId}</span>
+                        <span class="text-[9px] uppercase px-2 py-0.5 rounded-md font-bold tracking-wider ${o.context === 'B2B' ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-blue-50 text-blue-600 border border-blue-100'}">${o.context}</span>
+                        <span class="text-xs text-slate-400 font-medium">vom ${o.date}</span>
                     </div>
-                    <div class="font-bold">${o.total.toFixed(2).replace('.', ',')} €</div>
+                    <div class="font-black text-slate-900 font-mono">${o.total.toFixed(2).replace('.', ',')} €</div>
                 </div>
             `).join('');
         }
@@ -575,10 +586,10 @@
         }
 
         const legalTexts = {
-            impressum: `<h4 class="font-bold text-gray-900">Anbieter:</h4><p>René Prause<br>CLAVIS Software<br>47441 Moers</p>`,
-            privacy: `<h4 class="font-bold text-gray-900">Datenschutz:</h4><p>PWA-Betrieb verarbeitet Daten rein lokal im Sandbox-Verzeichnis des mobilen Endgeräts.</p>`,
-            agb: `<h4 class="font-bold text-gray-900">AGB:</h4><p>Es gelten die gesetzlichen Bestimmungen für Onlinegeschäfte im B2B/B2C-Ecosystem.</p>`,
-            withdrawal: `<h4 class="font-bold text-gray-900">Widerrufsbelehrung:</h4><p>Verbraucher haben ein 14-tägiges Widerrufsrecht.</p>`
+            impressum: `<h4 class="font-bold text-slate-900">Anbieter:</h4><p>René Prause<br>CLAVIS Software<br>47441 Moers</p>`,
+            privacy: `<h4 class="font-bold text-slate-900">Datenschutz:</h4><p>PWA-Betrieb verarbeitet Daten rein lokal im Sandbox-Verzeichnis des mobilen Endgeräts.</p>`,
+            agb: `<h4 class="font-bold text-slate-900">AGB:</h4><p>Es gelten die gesetzlichen Bestimmungen für Onlinegeschäfte im B2B/B2C-Ecosystem.</p>`,
+            withdrawal: `<h4 class="font-bold text-slate-900">Widerrufsbelehrung:</h4><p>Verbraucher haben ein 14-tägiges Widerrufsrecht.</p>`
         };
 
         function openLegalModal(type) {

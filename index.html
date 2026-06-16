@@ -162,15 +162,15 @@
             try {
               const { data, error } = await supabaseClient
                 .from('artikel')
-                .select('id,artikelnr,bezeichnung,vk_preis,einheit,bestand,mwst_satz,beschreibung')
+                .select('id,artikelnr,bezeichnung,verkaufspreis,einheit,bestand,mwst_satz,beschreibung')
                 .eq('aktiv', true)
-                .gt('vk_preis', 0)
+                .gt('verkaufspreis', 0)
                 .order('bezeichnung')
                 .limit(200)
               if (!error && data && data.length > 0) {
                 const isB2B = ClavisErpModuleConfig.contextMode !== 'Privatkunde'
                 products = data.map(a => {
-                  const brutto = a.vk_preis
+                  const brutto = a.verkaufspreis
                   const mwst   = a.mwst_satz || 19
                   const netto  = parseFloat((brutto / (1 + mwst/100)).toFixed(2))
                   return {

@@ -163,6 +163,7 @@
               const { data, error } = await supabaseClient
                 .from('artikel')
                 .select('id,artikelnr,bezeichnung,verkaufspreis,einheit,bestand,mwst_satz,beschreibung')
+                .eq('shop_artikel', true)
                 .eq('aktiv', true)
                 .gt('verkaufspreis', 0)
                 .order('bezeichnung')

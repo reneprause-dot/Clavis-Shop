@@ -40,6 +40,7 @@
                     <span id="supabase-status-indicator" class="inline-block h-2 w-2 rounded-full bg-slate-500"></span>
                     <span id="db-status-text">(Initialisiere...)</span>
                 </div>
+                <div class="text-xs text-blue-500 ml-2" id="product-count"></div>
                 <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 hidden sm:inline">Store</span>
             </div>
             <nav class="flex items-center gap-6">
@@ -149,11 +150,62 @@
     </div>
 
     <script>
-        const products = [
-            { id: "ART-0001", name: "Premium ERP Connect Modul", price: 249.00, desc: "Echtzeit-Synchronisations-Schnittstelle für automatisierte Datenübertragung.", sku: "CLV-PRM-01" },
-            { id: "ART-0002", name: "Automatisierter Webhook-Manager", price: 89.00, desc: "Eregnisgesteuerte Microservices für verzögerungsfreie Bestandsabgleiche.", sku: "CLV-WHM-02" },
-            { id: "ART-0003", name: "Mobiles PWA-Erweiterungspaket", price: 149.00, desc: "Optimiertes Offline-Modul inklusive lokaler Daten-Persistence-Logik.", sku: "CLV-PWA-03" }
-        ];
+        // Produkte: leer starten, werden vom ERP geladen
+        // Fallback-Produkte nur wenn ERP nicht verbunden
+        const FALLBACK_PRODUCTS = []
+        let products = []
+
+        // Produkte vom ERP empfangen (postMessage) ODER direkt aus Supabase laden
+        async function ladeProdukte() {
+          // Weg 1: Direkt aus Supabase wenn verbunden
+          if (supabaseClient) {
+            try {
+              const { data, error } = await supabaseClient
+                .from('artikel')
+                .select('id,artikelnr,bezeichnung,vk_preis,einheit,bestand,mwst_satz,beschreibung')
+                .eq('aktiv', true)
+                .gt('vk_preis', 0)
+                .order('bezeichnung')
+                .limit(200)
+              if (!error && data && data.length > 0) {
+                const isB2B = ClavisErpModuleConfig.contextMode !== 'Privatkunde'
+                products = data.map(a => {
+                  const brutto = a.vk_preis
+                  const mwst   = a.mwst_satz || 19
+                  const netto  = parseFloat((brutto / (1 + mwst/100)).toFixed(2))
+                  return {
+                    id:       a.artikelnr || a.id,
+                    erpId:    a.id,
+                    name:     a.bezeichnung,
+                    desc:     a.beschreibung || '',
+                    price:    isB2B ? netto : brutto,   // B2B netto, B2C brutto
+                    priceNet: netto,
+                    mwst:     mwst,
+                    unit:     a.einheit || 'Stk',
+                    stock:    a.bestand || 0,
+                    sku:      a.artikelnr || '',
+                  }
+                })
+                renderProducts()
+                return
+              }
+            } catch(e) { console.warn('Direktladen fehlgeschlagen:', e.message) }
+          }
+          // Weg 2: Vom ERP-iframe anfordern
+          if (IS_ERP_IFRAME) {
+            window.parent.postMessage({ type: 'CLAVIS_REQUEST_PRODUCTS' }, '*')
+            // Timeout: wenn nach 3s keine Antwort → Fallback
+            setTimeout(() => {
+              if (products.length === 0) {
+                products = FALLBACK_PRODUCTS
+                renderProducts()
+              }
+            }, 3000)
+          } else {
+            products = FALLBACK_PRODUCTS
+            renderProducts()
+          }
+        }
 
         let cart = [];
         let orders = [];
@@ -201,10 +253,11 @@
         });
 
         document.addEventListener("DOMContentLoaded", () => {
-            renderProducts();
             updateCartUI();
             renderOrdersLog();
             checkCookieConsent();
+            initSupabase();
+            ladeProdukte();  // Produkte laden (ERP oder Supabase)
         });
 
         function switchTab(tabName) {
@@ -220,10 +273,15 @@
             }
         }
 
-        function renderProducts() {
+        function renderProducts(productList) {
             const grid = document.getElementById('product-grid');
             if (!grid) return;
-            grid.innerHTML = products.map(p => `
+            const liste = productList || products;
+            if (liste.length === 0) {
+              grid.innerHTML = '<div class="col-span-full text-center py-16 text-gray-400"><div class="text-4xl mb-3">📦</div><p class="font-medium">Noch keine Produkte verfügbar</p><p class="text-sm mt-1">Bitte später erneut versuchen</p></div>'
+              return
+            }
+            grid.innerHTML = liste.map(p => `
                 <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col justify-between p-5 hover:border-blue-400 transition">
                     <div>
                         <div class="text-xs font-mono text-gray-400">Art.-Nr.: ${p.id}</div>
@@ -348,7 +406,7 @@
                 },
                 lines: cart.map(item => {
                     const p = products.find(prod => prod.id === item.id);
-                    return { itemNo: item.id, sku: p?.sku||item.id, name: p?.name||item.id, quantity: item.qty, priceNet: p?.priceNetto||p?.price||0 };
+                    return { itemNo: item.id, sku: p?.sku||item.id, name: p?.name||item.id, quantity: item.qty, priceNet: p?.priceNet||p?.priceNetto||p?.price||0 };
                 }),
                 shipping: 4.90
             };

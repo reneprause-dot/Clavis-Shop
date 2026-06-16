@@ -44,6 +44,12 @@
                 </div>
                 <div class="text-xs text-blue-500 ml-2" id="product-count"></div>
                 <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 hidden sm:inline">Store</span>
+                <div class="flex items-center bg-gray-100 rounded-lg p-1 ml-4 text-xs font-semibold">
+                    <button id="toggle-privatkunde" data-action="set-context" data-context="Privatkunde"
+                        class="px-3 py-1.5 rounded-md transition">Privat</button>
+                    <button id="toggle-geschaeftskunde" data-action="set-context" data-context="Geschaeftskunde"
+                        class="px-3 py-1.5 rounded-md transition">Geschäftlich</button>
+                </div>
             </div>
             <nav class="flex items-center gap-6">
                 <button data-action="switch-tab" data-tab="shop" class="text-gray-600 hover:text-blue-600 font-medium transition relative py-2">Shop</button>
@@ -160,6 +166,28 @@
             if (gespeicherterKontext) ClavisErpModuleConfig.contextMode = gespeicherterKontext
         } catch (e) {
             console.warn("Kontext-Konfiguration konnte nicht geladen werden.", e);
+        }
+
+        // Privat-/Geschäftskunden-Umschalter
+        function setKontext(neuerKontext) {
+            ClavisErpModuleConfig.contextMode = neuerKontext;
+            try { localStorage.setItem('clavis_erp_context_mode', neuerKontext); } catch(e) {}
+            updateKontextUI();
+            ladeProdukte();  // Preise neu berechnen (netto/brutto je Kontext)
+        }
+
+        function updateKontextUI() {
+            const btnPrivat = document.getElementById('toggle-privatkunde');
+            const btnGeschaeft = document.getElementById('toggle-geschaeftskunde');
+            const istB2B = ClavisErpModuleConfig.contextMode !== 'Privatkunde';
+            if (btnPrivat) {
+                btnPrivat.className = 'px-3 py-1.5 rounded-md transition ' +
+                    (!istB2B ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700');
+            }
+            if (btnGeschaeft) {
+                btnGeschaeft.className = 'px-3 py-1.5 rounded-md transition ' +
+                    (istB2B ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-500 hover:text-gray-700');
+            }
         }
 
         let cart = [];
@@ -328,10 +356,14 @@
             if (action === "submit-order") {
                 executeOrder();
             }
+            if (action === "set-context") {
+                setKontext(target.getAttribute("data-context"));
+            }
         });
 
         document.addEventListener("DOMContentLoaded", () => {
             updateCartUI();
+            updateKontextUI();
             renderOrdersLog();
             checkCookieConsent();
             initSupabase();

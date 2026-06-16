@@ -303,6 +303,7 @@
                   }
                 })
                 renderProducts()
+                bereinigeWarenkorb()
                 return
               }
             } catch(e) { console.warn('Direktladen fehlgeschlagen:', e.message) }
@@ -315,12 +316,26 @@
               if (products.length === 0) {
                 products = FALLBACK_PRODUCTS
                 renderProducts()
+                bereinigeWarenkorb()
               }
             }, 3000)
           } else {
             products = FALLBACK_PRODUCTS
             renderProducts()
+            bereinigeWarenkorb()
           }
+        }
+
+        // Entfernt Warenkorb-Einträge, deren Artikel nicht mehr im Sortiment sind
+        // (z.B. veraltete localStorage-Reste aus frueheren Sessions)
+        function bereinigeWarenkorb() {
+          const gueltigeIds = new Set(products.map(p => p.id))
+          const vorher = cart.length
+          cart = cart.filter(item => gueltigeIds.has(item.id))
+          if (cart.length !== vorher) {
+            saveCart()
+          }
+          updateCartUI()
         }
 
         // ZENTRALE EVENT-DELEGATION (Fängt Klicks ab, egal wann Elemente erzeugt werden)

@@ -152,6 +152,16 @@
     </div>
 
     <script>
+        // ERP-Kontext-Konfiguration (B2B/B2C-Steuerung)
+        // contextMode: 'Privatkunde' (B2C, Bruttopreise) oder ein B2B-Wert (Nettopreise)
+        let ClavisErpModuleConfig = { contextMode: 'Privatkunde' }
+        try {
+            const gespeicherterKontext = localStorage.getItem('clavis_erp_context_mode')
+            if (gespeicherterKontext) ClavisErpModuleConfig.contextMode = gespeicherterKontext
+        } catch (e) {
+            console.warn("Kontext-Konfiguration konnte nicht geladen werden.", e);
+        }
+
         let cart = [];
         let orders = [];
 

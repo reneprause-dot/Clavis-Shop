@@ -6,6 +6,8 @@
     <title>CLAVIS Store - Rechtssicherer E-Shop</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#2563eb">
+    <!-- Konfiguration (von Netlify Build generiert) -->
+    <script src="./config.js"></script>
     <!-- Supabase für direkten DB-Zugriff -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -150,6 +152,81 @@
     </div>
 
     <script>
+        let cart = [];
+        let orders = [];
+
+        try {
+            cart = JSON.parse(localStorage.getItem('clavis_shop_cart')) || [];
+            orders = JSON.parse(localStorage.getItem('clavis_shop_orders')) || [];
+        } catch (e) {
+            console.warn("Storage blockiert. Fallback auf RAM-Array.", e);
+        }
+
+        let supabaseClient = null
+        const IS_ERP_IFRAME = window.self !== window.top
+
+        // Supabase initialisieren (aus Netlify ENV via config.js ODER localStorage)
+        function initSupabase() {
+          const url = (window.CLAVIS_CONFIG && window.CLAVIS_CONFIG.SUPABASE_URL) || localStorage.getItem('clavis_sb_url')
+          const key = (window.CLAVIS_CONFIG && window.CLAVIS_CONFIG.SUPABASE_KEY) || localStorage.getItem('clavis_sb_key')
+          const indicator = document.getElementById('supabase-status-indicator')
+          const statusText = document.getElementById('db-status-text')
+
+          if (url && key && typeof supabase !== 'undefined') {
+            try {
+              supabaseClient = supabase.createClient(url, key)
+              if (indicator) indicator.className = 'inline-block h-2 w-2 rounded-full bg-emerald-400'
+              if (statusText) statusText.textContent = '(Live-Datenbank aktiv)'
+              syncOfflineOrders()
+            } catch(err) {
+              if (indicator) indicator.className = 'inline-block h-2 w-2 rounded-full bg-rose-500'
+              if (statusText) statusText.textContent = '(Verbindungsfehler)'
+              console.error('Supabase Init Fehler:', err.message)
+            }
+          } else {
+            if (indicator) indicator.className = 'inline-block h-2 w-2 rounded-full bg-slate-500'
+            if (statusText) statusText.textContent = '(Offline-Modus)'
+            console.warn('Supabase nicht konfiguriert. URL:', !!url, 'Key:', !!key)
+          }
+        }
+
+        async function sendOrderToSupabase(localOrder) {
+          if (!supabaseClient) return
+          try {
+            const { data, error } = await supabaseClient.from('shop_bestellungen').insert([{
+              shop_order_id: localOrder.orderId,
+              kunde_name:    localOrder.payload?.customer?.name || (localOrder.payload?.billing?.firstname + ' ' + localOrder.payload?.billing?.lastname) || '',
+              kunde_email:   localOrder.payload?.customer?.email || localOrder.payload?.billing?.email || '',
+              firma_name:    localOrder.payload?.customer?.company || null,
+              ustid:         localOrder.payload?.customer?.ustid || null,
+              kunde_strasse: localOrder.payload?.customer?.street || localOrder.payload?.billing?.street || '',
+              kunde_plz:     localOrder.payload?.customer?.zip || localOrder.payload?.billing?.zip || '',
+              kunde_ort:     localOrder.payload?.customer?.city || localOrder.payload?.billing?.city || '',
+              kunde_land:    localOrder.payload?.customer?.country || 'DE',
+              positionen:    localOrder.payload?.lines || localOrder.payload?.items || [],
+              versandkosten: 4.90,
+              payload:       localOrder.payload,
+            }]).select('belegnr, bruttobetrag')
+
+            if (error) throw error
+            if (data?.[0]) {
+              localOrder.orderId = data[0].belegnr
+              localOrder.total   = parseFloat(data[0].bruttobetrag)
+              localOrder.synced  = true
+              localStorage.setItem('clavis_shop_orders', JSON.stringify(orders))
+              if (typeof renderOrdersLog === 'function') renderOrdersLog()
+            }
+          } catch(err) {
+            console.warn('Supabase-Sync fehlgeschlagen:', err.message)
+          }
+        }
+
+        async function syncOfflineOrders() {
+          if (!supabaseClient || !navigator.onLine) return
+          const unsynced = (orders || []).filter(o => !o.synced)
+          for (const order of unsynced) await sendOrderToSupabase(order)
+        }
+
         // Produkte: leer starten, werden vom ERP geladen
         // Fallback-Produkte nur wenn ERP nicht verbunden
         const FALLBACK_PRODUCTS = []
@@ -206,16 +283,6 @@
             products = FALLBACK_PRODUCTS
             renderProducts()
           }
-        }
-
-        let cart = [];
-        let orders = [];
-
-        try {
-            cart = JSON.parse(localStorage.getItem('clavis_shop_cart')) || [];
-            orders = JSON.parse(localStorage.getItem('clavis_shop_orders')) || [];
-        } catch (e) {
-            console.warn("Storage blockiert. Fallback auf RAM-Array.", e);
         }
 
         // ZENTRALE EVENT-DELEGATION (Fängt Klicks ab, egal wann Elemente erzeugt werden)

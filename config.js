@@ -1,0 +1,4 @@
+window.CLAVIS_CONFIG = {
+  SUPABASE_URL: 'https://ijbdwqiyfyvrclinmimv.supabase.co',
+  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlqYmR3cWl5Znl2cmNsaW5taW12Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1MDMyMDUsImV4cCI6MjA5NjA3OTIwNX0.MAJkmVicnk5RrRsRfgr2oRjpeGJHcYGzSaBE_C18F80'
+}
